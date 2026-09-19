@@ -4,6 +4,9 @@
 
 ### Partida y red
 
+- Cupo de 30 capitanes por mapa, incluidos bots; retirada inmediata de bots cuando hace falta una plaza y apertura automática de nuevas salas. Se reutilizan las plazas disponibles y se conservan las reservas de reconexión.
+- Liberación periódica de índices de entidades ya eliminadas en el cliente, evitando la acumulación de claves de proyectiles de Colyseus Schema 5.0.33 durante partidas largas.
+
 - Corregida la compra de casco con armadura: conserva la vida máxima del equipamiento y aplica la curación completa.
 - Compartido el efecto de ralentización entre la simulación y la predicción del cliente.
 - Recuperación de la misma sesión tras un corte, con intentos limitados y cierre de reservas tardías.
@@ -16,6 +19,9 @@
 - Una expulsión por abuso cierra la conexión sin reservar plaza. La sustitución de un socket con un token válido sigue recuperando la sesión.
 
 ### Interfaz
+
+- Barras de vida, escudos de aparición y auras de jefes reutilizan su geometría. Los barcos alejados avanzan sus temporizadores sin recalcular todas sus piezas, y las monedas y estelas fuera de cámara dejan de consumir trabajo de animación.
+- Atlas compartidos para sprites pequeños, con la misma resolución y bordes extendidos para conservar el filtrado al escalar y rotar.
 
 - Distribución móvil en vertical y horizontal, mandos táctiles, consejos adaptados y paneles desplegables de mejoras, flota y clasificación.
 - Astillero desplazable con vistas del armamento, diálogos con navegación por teclado y controles con nombres accesibles.

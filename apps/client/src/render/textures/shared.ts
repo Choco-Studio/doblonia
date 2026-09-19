@@ -1,4 +1,5 @@
 import { Texture } from 'pixi.js'
+import { atlasTexture } from './SpriteAtlas.js'
 
 /**
  * Texturas procedurales dibujadas con Canvas2D (degradados, sombras suaves,
@@ -34,6 +35,14 @@ export function cached(key: string, make: () => Tex): Tex {
     cache.set(key, t)
   }
   return t
+}
+
+/** El agua repetida y las texturas de cada mapa conservan sus fuentes independientes. */
+export function cachedSprite(key: string, make: () => Tex): Tex {
+  return cached(key, () => {
+    const result = make()
+    return { ...result, texture: atlasTexture(result.texture) }
+  })
 }
 
 /** Crea una textura de mundo de tamaño w×h (unidades de mundo) con el origen en (ox, oy). */

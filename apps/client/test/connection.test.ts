@@ -12,6 +12,7 @@ function room() {
     reconnection: { enabled: true },
     connection: { isOpen: true },
     onMessage: () => () => {},
+    onStateChange: () => {},
     send: (type: string, data: unknown) => sent.push({ type, data }),
     leave: async () => {
       leaves++

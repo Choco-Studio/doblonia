@@ -8,6 +8,7 @@ import { Server, matchMaker } from '@colyseus/core'
 import { Encoder } from '@colyseus/schema'
 import { WebSocketTransport } from '@colyseus/ws-transport'
 import { DobloniaRoom } from './DobloniaRoom.js'
+import { ROOM_CAPACITY } from '@doblonia/content'
 import project from '../../../package.json' with { type: 'json' }
 
 // Con ~16 barcos + flota + ~180 monedas + islas, el snapshot inicial supera el buffer por defecto (8 KB).
@@ -84,7 +85,7 @@ export function createGameServer(config: ServerConfig = {}) {
         byMode[mode].humans += metadata?.humans ?? r.clients
         byMode[mode].players += metadata?.players ?? r.clients
       }
-      res.json({ ok: true, modes: byMode })
+      res.json({ ok: true, capacityPerRoom: ROOM_CAPACITY, modes: byMode })
     } catch {
       res.status(503).json({ ok: false })
     }
@@ -120,8 +121,9 @@ export function createGameServer(config: ServerConfig = {}) {
     gracefullyShutdown: config.gracefullyShutdown,
   })
 
-  gameServer.define('doblonia_ffa', DobloniaRoom, { mode: 'ffa' })
-  gameServer.define('doblonia_tdm', DobloniaRoom, { mode: 'tdm' })
+  // joinOrCreate completa primero una sala disponible y crea otro mapa al llenarse.
+  gameServer.define('doblonia_ffa', DobloniaRoom, { mode: 'ffa' }).sortBy({ clients: -1 })
+  gameServer.define('doblonia_tdm', DobloniaRoom, { mode: 'tdm' }).sortBy({ clients: -1 })
 
   return { gameServer, httpServer }
 }

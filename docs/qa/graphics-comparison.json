@@ -1,0 +1,111 @@
+{
+  "measuredAt": "2026-09-19T15:15:59.212Z",
+  "baselineRevision": "a275086f6c0a134900f32832dbe8bf35baccfdea",
+  "environment": "Windows, Intel Core i5-10400T, Intel UHD 630, in-app Chromium/WebGL; mobile viewport emulated on the same PC.",
+  "desktop": {
+    "before": {
+      "viewport": {
+        "width": 1920,
+        "height": 1080,
+        "dpr": 1
+      },
+      "captains": 30,
+      "escorts": 120,
+      "frames": 1200,
+      "frameMs": {
+        "mean": 18.792,
+        "p95": 33.4
+      },
+      "updateMs": {
+        "mean": 6.674,
+        "p95": 10.1
+      },
+      "submitMs": {
+        "mean": 10.601,
+        "p95": 15.8
+      },
+      "geometryClearsPerFrame": 170,
+      "scope": "Fixed scene, 180 warmup frames, 1200 measured frames; no HUD, network or simulation."
+    },
+    "after": {
+      "viewport": {
+        "width": 1920,
+        "height": 1080,
+        "dpr": 1
+      },
+      "captains": 30,
+      "escorts": 120,
+      "frames": 1200,
+      "frameMs": {
+        "mean": 18.403,
+        "p95": 33.3
+      },
+      "updateMs": {
+        "mean": 3.985,
+        "p95": 6.3
+      },
+      "submitMs": {
+        "mean": 9.37,
+        "p95": 17.8
+      },
+      "geometryClearsPerFrame": 0,
+      "scope": "Fixed scene, 180 warmup frames, 1200 measured frames; no HUD, network or simulation."
+    }
+  },
+  "mobileEmulation": {
+    "before": {
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "dpr": 2
+      },
+      "captains": 30,
+      "escorts": 120,
+      "frames": 1200,
+      "frameMs": {
+        "mean": 16.667,
+        "p95": 16.8
+      },
+      "updateMs": {
+        "mean": 2.45,
+        "p95": 3.6
+      },
+      "submitMs": {
+        "mean": 3.41,
+        "p95": 4.9
+      },
+      "geometryClearsPerFrame": 170,
+      "scope": "Fixed scene, 180 warmup frames, 1200 measured frames; no HUD, network or simulation."
+    },
+    "after": {
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "dpr": 2
+      },
+      "captains": 30,
+      "escorts": 120,
+      "frames": 1200,
+      "frameMs": {
+        "mean": 16.667,
+        "p95": 16.8
+      },
+      "updateMs": {
+        "mean": 1.443,
+        "p95": 2.2
+      },
+      "submitMs": {
+        "mean": 2.587,
+        "p95": 4.7
+      },
+      "geometryClearsPerFrame": 0,
+      "scope": "Fixed scene, 180 warmup frames, 1200 measured frames; no HUD, network or simulation."
+    }
+  },
+  "scope": "Same seeded 30-captain/120-escort scene. Individual measurements, no network load during sampling. Timings vary with host/browser; not a physical-phone or complete-game benchmark.",
+  "visualCheck": {
+    "atlasCases": 9,
+    "maxChannelDifference": 0,
+    "scope": "GPU comparison against ungrouped textures at three sizes and three scale/rotation combinations, including alpha."
+  }
+}

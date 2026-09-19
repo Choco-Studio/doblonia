@@ -1,5 +1,5 @@
 import { SkinDef, DeckLayout, deckLayout, deckBarrelLength } from '@doblonia/content'
-import { shade, Tex, cached, worldTex, hex, mulberry32, softShadow } from './shared.js'
+import { shade, Tex, cachedSprite as cached, worldTex, hex, mulberry32, softShadow } from './shared.js'
 
 // ---------------------------------------------------------------------------
 // Barcos

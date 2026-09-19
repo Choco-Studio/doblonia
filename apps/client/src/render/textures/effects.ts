@@ -1,4 +1,4 @@
-import { Tex, cached, worldTex, mulberry32 } from './shared.js'
+import { Tex, cachedSprite as cached, worldTex, mulberry32 } from './shared.js'
 
 // ---------------------------------------------------------------------------
 // Genéricas: brillo, humo, espuma, chispa, sombra
