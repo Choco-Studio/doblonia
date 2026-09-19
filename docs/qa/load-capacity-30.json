@@ -1,0 +1,227 @@
+{
+  "measuredAt": "2026-09-19T15:10:03.777Z",
+  "passed": true,
+  "errors": [],
+  "seconds": 600,
+  "clients": 90,
+  "unexpectedLeaves": 0,
+  "rooms": [
+    {
+      "measuredAt": "2026-09-19T15:10:02.624Z",
+      "seconds": 600,
+      "rooms": 1,
+      "clients": 30,
+      "webSocketImplementation": "native",
+      "unexpectedLeaves": 0,
+      "leaves": [],
+      "eventLoopMs": {
+        "p99": 203.16,
+        "max": 702.02
+      },
+      "advancedShips": 30,
+      "peakFleet": 120,
+      "peakBullets": 477,
+      "snapshots": {
+        "min": 6223,
+        "max": 6232
+      },
+      "rttMs": {
+        "p50": 56.44,
+        "p95": 245.41,
+        "p99": 278.33,
+        "samples": 2079
+      },
+      "clientHeapSamples": [
+        {
+          "seconds": 0,
+          "heapMiB": 37,
+          "decoderRefs": 427,
+          "bulletIndexes": 0,
+          "bullets": 0
+        },
+        {
+          "seconds": 75,
+          "heapMiB": 130,
+          "decoderRefs": 1191,
+          "bulletIndexes": 3204,
+          "bullets": 426
+        },
+        {
+          "seconds": 154,
+          "heapMiB": 78,
+          "decoderRefs": 1176,
+          "bulletIndexes": 1964,
+          "bullets": 395
+        },
+        {
+          "seconds": 286,
+          "heapMiB": 99,
+          "decoderRefs": 1196,
+          "bulletIndexes": 3770,
+          "bullets": 421
+        },
+        {
+          "seconds": 416,
+          "heapMiB": 134,
+          "decoderRefs": 1165,
+          "bulletIndexes": 930,
+          "bullets": 408
+        },
+        {
+          "seconds": 532,
+          "heapMiB": 77,
+          "decoderRefs": 1209,
+          "bulletIndexes": 3407,
+          "bullets": 426
+        }
+      ],
+      "scope": "Local SDK clients; synthetic rewards and replenished fleets. Excludes Internet latency and browser rendering.",
+      "stateUpdatesPerSecond": 10.37
+    },
+    {
+      "measuredAt": "2026-09-19T15:10:02.647Z",
+      "seconds": 600,
+      "rooms": 1,
+      "clients": 30,
+      "webSocketImplementation": "native",
+      "unexpectedLeaves": 0,
+      "leaves": [],
+      "eventLoopMs": {
+        "p99": 213.12,
+        "max": 711.98
+      },
+      "advancedShips": 30,
+      "peakFleet": 120,
+      "peakBullets": 483,
+      "snapshots": {
+        "min": 6224,
+        "max": 6232
+      },
+      "rttMs": {
+        "p50": 48.23,
+        "p95": 199.94,
+        "p99": 400.31,
+        "samples": 2077
+      },
+      "clientHeapSamples": [
+        {
+          "seconds": 0,
+          "heapMiB": 37,
+          "decoderRefs": 429,
+          "bulletIndexes": 0,
+          "bullets": 0
+        },
+        {
+          "seconds": 76,
+          "heapMiB": 145,
+          "decoderRefs": 1204,
+          "bulletIndexes": 4390,
+          "bullets": 448
+        },
+        {
+          "seconds": 157,
+          "heapMiB": 140,
+          "decoderRefs": 1247,
+          "bulletIndexes": 2973,
+          "bullets": 452
+        },
+        {
+          "seconds": 289,
+          "heapMiB": 125,
+          "decoderRefs": 1210,
+          "bulletIndexes": 545,
+          "bullets": 416
+        },
+        {
+          "seconds": 418,
+          "heapMiB": 217,
+          "decoderRefs": 1228,
+          "bulletIndexes": 2277,
+          "bullets": 438
+        },
+        {
+          "seconds": 530,
+          "heapMiB": 133,
+          "decoderRefs": 1234,
+          "bulletIndexes": 2349,
+          "bullets": 426
+        }
+      ],
+      "scope": "Local SDK clients; synthetic rewards and replenished fleets. Excludes Internet latency and browser rendering.",
+      "stateUpdatesPerSecond": 10.37
+    },
+    {
+      "measuredAt": "2026-09-19T15:10:02.592Z",
+      "seconds": 600,
+      "rooms": 1,
+      "clients": 30,
+      "webSocketImplementation": "native",
+      "unexpectedLeaves": 0,
+      "leaves": [],
+      "eventLoopMs": {
+        "p99": 213.52,
+        "max": 793.77
+      },
+      "advancedShips": 30,
+      "peakFleet": 120,
+      "peakBullets": 494,
+      "snapshots": {
+        "min": 6223,
+        "max": 6231
+      },
+      "rttMs": {
+        "p50": 43.9,
+        "p95": 217.56,
+        "p99": 402.46,
+        "samples": 2071
+      },
+      "clientHeapSamples": [
+        {
+          "seconds": 0,
+          "heapMiB": 34,
+          "decoderRefs": 427,
+          "bulletIndexes": 0,
+          "bullets": 0
+        },
+        {
+          "seconds": 76,
+          "heapMiB": 133,
+          "decoderRefs": 1232,
+          "bulletIndexes": 3961,
+          "bullets": 451
+        },
+        {
+          "seconds": 157,
+          "heapMiB": 130,
+          "decoderRefs": 1207,
+          "bulletIndexes": 3116,
+          "bullets": 450
+        },
+        {
+          "seconds": 290,
+          "heapMiB": 114,
+          "decoderRefs": 1171,
+          "bulletIndexes": 689,
+          "bullets": 400
+        },
+        {
+          "seconds": 413,
+          "heapMiB": 184,
+          "decoderRefs": 1199,
+          "bulletIndexes": 4491,
+          "bullets": 419
+        },
+        {
+          "seconds": 529,
+          "heapMiB": 228,
+          "decoderRefs": 1175,
+          "bulletIndexes": 1433,
+          "bullets": 431
+        }
+      ],
+      "scope": "Local SDK clients; synthetic rewards and replenished fleets. Excludes Internet latency and browser rendering.",
+      "stateUpdatesPerSecond": 10.37
+    }
+  ],
+  "scope": "One SDK load process per room, all on the same local machine. Not a hosting capacity estimate. Local lint/typecheck/test/build and short visual checks overlapped part of this run; it measures stability under contention, not dedicated-server throughput."
+}

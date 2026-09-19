@@ -6,10 +6,14 @@ import { readFile, writeFile, mkdir } from 'node:fs/promises'
 const endpoint = process.argv[2] ?? 'http://127.0.0.1:2574'
 const seconds = Number(process.argv[3] ?? 600)
 const count = Number(process.argv[4] ?? 3)
+const decodeMode = process.argv[5] ?? 'full'
+assert.ok(decodeMode === 'full' || decodeMode === 'transport')
 assert.ok(Number.isInteger(count) && count >= 1 && count <= 4)
 const children = []
+const runId = Date.now().toString(36)
+const reportNames = Array.from({ length: count }, (_, index) => `load-${runId}-${index}`)
 try {
-  await Promise.all(
+  const outcomes = await Promise.allSettled(
     Array.from(
       { length: count },
       (_, index) =>
@@ -23,7 +27,8 @@ try {
               endpoint,
               String(seconds),
               '1',
-              `load-room-${index}`,
+              reportNames[index],
+              decodeMode,
             ],
             { stdio: ['ignore', 'inherit', 'inherit'] },
           )
@@ -36,20 +41,26 @@ try {
     ),
   )
   const rooms = await Promise.all(
-    Array.from({ length: count }, (_, i) =>
-      readFile(`build/qa/load-room-${i}.json`, 'utf8').then(JSON.parse),
+    reportNames.map((name) =>
+      readFile(`build/qa/${name}.json`, 'utf8')
+        .then(JSON.parse)
+        .catch(() => null),
     ),
   )
   const report = {
     measuredAt: new Date().toISOString(),
+    passed: outcomes.every((outcome) => outcome.status === 'fulfilled'),
+    errors: outcomes.flatMap((outcome) => (outcome.status === 'rejected' ? [String(outcome.reason)] : [])),
     seconds,
-    clients: rooms.reduce((sum, room) => sum + room.clients, 0),
-    unexpectedLeaves: rooms.reduce((sum, room) => sum + room.unexpectedLeaves, 0),
+    decodeMode,
+    clients: rooms.reduce((sum, room) => sum + (room?.clients ?? 0), 0),
+    unexpectedLeaves: rooms.reduce((sum, room) => sum + (room?.unexpectedLeaves ?? 0), 0),
     rooms,
     scope: 'One SDK load process per room, all on the same local machine. Not a hosting capacity estimate.',
   }
   await mkdir('build/qa', { recursive: true })
   await writeFile('build/qa/multi-room-load.json', JSON.stringify(report, null, 2) + '\n')
+  assert.ok(report.passed, report.errors.join('\n'))
   console.log(`Verified ${report.clients} clients across ${count} rooms for ${seconds} seconds`)
 } finally {
   for (const child of children) if (child.exitCode === null) child.kill()

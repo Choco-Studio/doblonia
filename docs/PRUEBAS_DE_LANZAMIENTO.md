@@ -20,9 +20,17 @@ Para carga avanzada, abre un **servidor local de pruebas separado**, con `HOST=1
 npm run test:load -- http://127.0.0.1:2574 600 3
 ```
 
-Usa tres procesos de clientes, 24 jugadores por sala, compras reales con saldo artificial y reposición de flotas. Sus informes se guardan en `build/qa`. Se detiene ante avisos de decodificación, desconexiones o falta de actualizaciones; también exige que la carga haya incluido armamento avanzado y escoltas. No apuntes esta prueba al servicio público ni habilites los comandos de desarrollo allí.
+Usa tres procesos de clientes, 30 jugadores por sala, compras reales con saldo artificial y reposición de flotas. Cada conexión decodifica el estado completo y utiliza el mismo mantenimiento de índices que el navegador. Sus informes se guardan en `build/qa`, incluidos los resultados fallidos. Falla ante avisos de decodificación, desconexiones o falta de actualizaciones; también exige que la carga haya incluido armamento avanzado y escoltas. Registra heap, referencias activas, índices de proyectiles, latencia y pausas del bucle de eventos. No apuntes esta prueba al servicio público ni habilites los comandos de desarrollo allí.
+
+La suite normal incluye entradas simultáneas que abren tres mapas, reconexión a una sala llena, reutilización de plazas y cupo de bots en ambos modos. Otra prueba rota 20.000 proyectiles y reutiliza claves, comprobando que liberar índices obsoletos conserva el estado de cada actualización.
+
+Para separar el coste de los generadores del servidor, puede añadirse `transport` al comando de carga. Todos los clientes mantienen conexiones y reciben mensajes, pero solo uno por sala decodifica el estado; el informe identifica explícitamente este modo. Úsalo como diagnóstico de transporte, junto a la prueba completa por defecto, nunca como sustituto de una prueba del navegador.
 
 ## Rendimiento del navegador
+
+Con `npm run dev`, abre <http://localhost:5173/bench/graphics.html>. La escena tiene una semilla fija, 30 capitanes con equipo avanzado y 120 escoltas. Calienta durante 180 fotogramas y mide otros 1.200: tiempo de actualización, envío al renderizador, intervalo entre fotogramas y reconstrucciones de geometría. El resultado queda visible y en `window.__graphicsResult`. No incluye HUD, red ni simulación; sirve para comparar cambios de renderizado, no para certificar una partida completa. Usa el mismo tamaño, DPR y equipo, sin ejecutar carga de red a la vez. Esa página no forma parte de la distribución pública.
+
+En la consola de esa instancia local, `const { checkAtlas } = await import('/bench/atlas.ts'); await checkAtlas()` compara en GPU texturas independientes y agrupadas, incluyendo transparencia, rotación, ampliación y reducción. No altera imágenes del juego; utiliza patrones sintéticos para detectar bordes contaminados o cambios de encuadre.
 
 `apps/client/bench/browserProbe.mjs` mide intervalos de `requestAnimationFrame`, tareas largas, errores y muestras de heap. Se utiliza solo para diagnóstico en una instancia local; no forma parte del cliente de producción. Importa la función en la consola del cliente servido por Vite y guarda el resultado de `probe.stop()`:
 

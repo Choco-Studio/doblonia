@@ -15,7 +15,15 @@ import {
   type GameMode,
   type WorldEvent,
 } from '@doblonia/sim'
-import { SLOT_ORDER, STAT_ORDER, SKINS, DEFAULT_SKIN, type SlotId, type StatId } from '@doblonia/content'
+import {
+  SLOT_ORDER,
+  STAT_ORDER,
+  SKINS,
+  DEFAULT_SKIN,
+  ROOM_CAPACITY,
+  type SlotId,
+  type StatId,
+} from '@doblonia/content'
 import { RoomStateSchema } from '@doblonia/protocol'
 import { syncIslandsOnce, syncWorldToState } from './sync.js'
 import { ensureBotPopulation, smallerTeam } from './bots.js'
@@ -52,9 +60,9 @@ export function sanitizeName(raw: unknown): string {
 
 export class DobloniaRoom extends Room<{
   state: RoomStateSchema
-  metadata: { mode: GameMode; humans: number; players: number }
+  metadata: { mode: GameMode; humans: number; players: number; capacity: number }
 }> {
-  maxClients = 24
+  maxClients = ROOM_CAPACITY
   maxMessagesPerSecond = MAX_MESSAGES_PER_SECOND
   private world!: World
   private botIds = new Set<string>()
@@ -86,7 +94,7 @@ export class DobloniaRoom extends Room<{
     this.state.mapSize = this.world.mapSize
     syncIslandsOnce(this.world, this.state)
     ensureBotPopulation(this.world, this.botIds)
-    this.setMetadata({ mode, humans: 0, players: this.world.ships.size })
+    this.publishMetadata()
 
     this.onMessage('input', (client, data: unknown) => {
       const msg = record(data)
@@ -172,10 +180,9 @@ export class DobloniaRoom extends Room<{
       this.lastInput.delete(id)
     }
     const events = simulateTick(this.world, TICK_DT)
-    // La población de bots se ajusta sola: se republica la ocupación cada ~5 s
-    if (Math.floor(this.world.timeMs / 5000) !== Math.floor((this.world.timeMs - TICK_MS) / 5000))
-      this.publishMetadata()
+    const previousPopulation = this.world.ships.size
     ensureBotPopulation(this.world, this.botIds)
+    if (this.world.ships.size !== previousPopulation) this.publishMetadata()
     syncWorldToState(this.world, this.state)
     this.broadcastEvents(events)
   }
@@ -192,6 +199,9 @@ export class DobloniaRoom extends Room<{
   onJoin(client: Client, data: unknown): void {
     const options = record(data)
     const skin = SKINS.some((s) => s.id === options?.skin) ? options.skin : DEFAULT_SKIN
+    // La reserva de Colyseus cuenta humanos, incluida la reconexión. Antes de ocuparla,
+    // retiramos los bots necesarios para respetar también el límite físico del mapa.
+    ensureBotPopulation(this.world, this.botIds, 1)
     const team = this.world.mode === 'tdm' ? smallerTeam(this.world, true) : ''
     createShip(
       this.world,
@@ -207,7 +217,12 @@ export class DobloniaRoom extends Room<{
 
   /** Ocupación pública de la sala: el menú muestra cuántos barcos navegan en ella. */
   private publishMetadata(): void {
-    this.setMetadata({ mode: this.world.mode, humans: this.humanCount(), players: this.world.ships.size })
+    this.setMetadata({
+      mode: this.world.mode,
+      humans: this.humanCount(),
+      players: this.world.ships.size,
+      capacity: ROOM_CAPACITY,
+    })
   }
 
   private humanCount(): number {
@@ -234,6 +249,7 @@ export class DobloniaRoom extends Room<{
   onLeave(client: Client): void {
     this.removeShip(client.sessionId)
     this.lastInput.delete(client.sessionId)
+    ensureBotPopulation(this.world, this.botIds)
     this.publishMetadata()
   }
 

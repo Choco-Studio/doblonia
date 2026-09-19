@@ -2,7 +2,7 @@
 
 ## Flujo de una partida
 
-El cliente entra en `doblonia_ffa` o `doblonia_tdm`. Una sala crea un mundo, completa la población con bots y ejecuta la simulación a 20 Hz. El cliente envía controles como máximo a 30 Hz y conserva un latido de 250 ms aunque no cambien.
+El cliente entra en `doblonia_ffa` o `doblonia_tdm` mediante `joinOrCreate`. Se llena primero una sala disponible del modo elegido y se crea otra al alcanzar 30 capitanes. El cupo incluye bots y reservas de reconexión; los bots ceden las plazas necesarias antes de crear un capitán humano. Cada sala tiene su mundo y ejecuta la simulación a 20 Hz. El cliente envía controles como máximo a 30 Hz y conserva un latido de 250 ms aunque no cambien.
 
 Cada tick aplica entrada, IA, movimiento, disparos, impactos y economía. `sync.ts` copia únicamente el estado público al esquema de red. Pixi interpola las entidades remotas y predice el movimiento propio con las mismas funciones de física. La ralentización efectiva se sincroniza para que la predicción use el mismo multiplicador que el servidor.
 
@@ -25,6 +25,10 @@ El servidor neutraliza los controles cuando cae el socket o pasan más de un seg
 ## Rendimiento y revisión
 
 El render y la entrada siguen la cadencia visual. Las actualizaciones del HUD se agrupan a 10 Hz para evitar reconstruir DOM y minimapa en cada fotograma. El límite de partículas, el movimiento reducido y el temblor son preferencias del jugador.
+
+Los sprites pequeños de barcos, tesoros, munición y efectos comparten atlas de 1024 × 1024. Se conservan la escala doble del dibujo original, los anclajes y dos píxeles de borde extendido para evitar contaminación entre imágenes. Las páginas pertenecen a la caché de la aplicación; destruir un barco no debe destruir su fuente compartida. El agua repetida y las texturas de cada isla mantienen fuentes independientes. Barras de vida, auras y escudos conservan su geometría; las transformaciones y la transparencia producen su animación.
+
+`decodedState.ts` contiene una compatibilidad acotada para Colyseus Schema 5.0.33: cada 100 actualizaciones retira de `_collectionIndexes` las claves que ya no existen en los mapas decodificados. El decodificador elimina correctamente entidades e índices inversos, pero deja ese diccionario crecer con cada proyectil. No debe aplicarse sobre el estado del servidor, cuyos índices pueden estar pendientes de envío. Antes de retirar esta compatibilidad al actualizar la dependencia, ejecuta la prueba de rotación y reutilización de claves y una carga prolongada con todos los decodificadores.
 
 El relieve, las palmeras y los elementos costeros se pintan una vez en la textura de cada isla con su semilla. El oleaje usa una textura separada: añadir hojas, vetas o pequeñas rocas no añade entidades al bucle de dibujo. La costa visual sigue los círculos de colisión; sus pequeñas irregularidades no deben alterar la lectura de los obstáculos. Los adornos no modifican las reglas físicas.
 

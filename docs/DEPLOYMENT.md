@@ -6,7 +6,15 @@ Requisitos: Node.js 22.13 o posterior y npm. En una copia limpia, ejecuta `npm c
 
 Copia `.env.example` a `.env`, configura el puerto y arranca con `npm start`. Ese comando establece `NODE_ENV=production` aunque el entorno indique otro valor. Las dependencias de ejecución deben permanecer instaladas. No se necesita `tsx` en producción: el servidor compilado es JavaScript para Node.
 
-`/health` devuelve el estado del proceso y `/status` la población humana y total por modo. Una respuesta sana no certifica que un jugador remoto pueda alcanzar WebSocket: incluye una entrada de prueba desde la URL pública en la comprobación del despliegue.
+`/health` devuelve el estado del proceso y `/status` la población humana y total por modo, además de `capacityPerRoom`. Una respuesta sana no certifica que un jugador remoto pueda alcanzar WebSocket: incluye una entrada de prueba desde la URL pública en la comprobación del despliegue.
+
+### Capacidad y creación de mapas
+
+Cada sala tiene un máximo de **30 capitanes, humanos y bots juntos**. Con poca población, los bots completan aproximadamente 16 barcos; al entrar jugadores, se retiran preferentemente los bots que no están combatiendo. Si se necesita su plaza para respetar el máximo, la retirada es inmediata e incluye sus escoltas. Los muertos y las sesiones reservadas para reconexión siguen ocupando plaza.
+
+`joinOrCreate` busca primero la sala más poblada con una plaza libre del modo elegido. Al llenarse, Colyseus crea otro mapa; las reservas de entrada impiden superar el límite incluso con peticiones simultáneas. No se traslada a quienes ya están jugando. Una salida voluntaria libera la plaza y una desconexión recuperable la reserva durante 20 segundos. Las salas sin clientes ni reservas se destruyen automáticamente.
+
+Son partidas independientes dentro del mismo proceso Node, no máquinas adicionales contratadas al proveedor. Abrir mapas evita la masificación, pero no añade CPU ni memoria al alojamiento. Para escalar entre procesos o máquinas hacen falta presencia/driver compartidos y encaminamiento de WebSocket; no basta con duplicar el contenedor detrás de un balanceador. Mide el número de salas admisible en el alojamiento real antes de anunciar capacidad total.
 
 ## Configuración
 

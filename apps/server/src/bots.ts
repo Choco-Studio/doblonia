@@ -1,8 +1,6 @@
 import { createShip, nextWorldId, type World } from '@doblonia/sim'
-import { SKINS, type TeamId } from '@doblonia/content'
+import { SKINS, ROOM_CAPACITY, BOT_POPULATION_TARGET, type TeamId } from '@doblonia/content'
 import { randomPlayerName } from './names.js'
-
-export const TARGET_MAIN_SHIPS = 16
 
 export function teamCounts(world: World, humansOnly = false): { red: number; blue: number } {
   let red = 0
@@ -26,13 +24,13 @@ export function smallerTeam(world: World, balanceHumans = false): TeamId {
 }
 
 /**
- * Mantiene el número de barcos principales (humanos + bots) cerca de TARGET_MAIN_SHIPS.
- * Los bots se retiran de forma diferida: nunca a mitad de un combate reciente.
+ * Rellena las salas pequeñas sin superar el cupo compartido de humanos y bots.
+ * Se intenta terminar los combates antes de retirar un bot, salvo que haga falta su plaza.
  * En TDM, se retira preferentemente un bot del equipo más numeroso.
  */
-export function ensureBotPopulation(world: World, botIds: Set<string>): void {
+export function ensureBotPopulation(world: World, botIds: Set<string>, incomingHumans = 0): void {
   const humanCount = [...world.ships.values()].filter((s) => !s.isBot).length
-  const desiredBots = Math.max(0, TARGET_MAIN_SHIPS - humanCount)
+  const desiredBots = Math.max(0, BOT_POPULATION_TARGET - humanCount - incomingHumans)
 
   while (botIds.size < desiredBots) {
     const id = nextWorldId(world, 'bot_')
@@ -56,6 +54,8 @@ export function ensureBotPopulation(world: World, botIds: Set<string>): void {
     const biggerTeam: TeamId = world.mode === 'tdm' ? (counts.red >= counts.blue ? 'red' : 'blue') : ''
     let candidate: string | undefined
     let fallback: string | undefined
+    let fighting: string | undefined
+    let fightingFallback: string | undefined
     for (const id of botIds) {
       const ship = world.ships.get(id)
       if (!ship) {
@@ -63,7 +63,11 @@ export function ensureBotPopulation(world: World, botIds: Set<string>): void {
         break
       }
       const calm = !ship.alive || world.timeMs - ship.lastDamageAt > 3000
-      if (!calm) continue
+      if (!calm) {
+        if (!biggerTeam || ship.team === biggerTeam) fighting ??= id
+        fightingFallback ??= id
+        continue
+      }
       if (!biggerTeam || ship.team === biggerTeam) {
         candidate = id
         break
@@ -71,6 +75,7 @@ export function ensureBotPopulation(world: World, botIds: Set<string>): void {
       fallback ??= id
     }
     candidate ??= fallback
+    if (world.ships.size + incomingHumans > ROOM_CAPACITY) candidate ??= fighting ?? fightingFallback
     if (!candidate) break
     const ship = world.ships.get(candidate)
     if (ship) {

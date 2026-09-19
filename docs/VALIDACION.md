@@ -2,7 +2,41 @@
 
 Fecha: 19 de septiembre de 2026. Entorno local: Windows, Node.js 22.20.0, Intel Core i5-10400T, Intel UHD 630 y 16 GB de RAM. Estado: candidato 0.1.0 para revisión, sin etiqueta estable ni despliegue público del juego.
 
-## Comprobaciones realizadas
+## Actualización: gráficos y salas de 30
+
+La revisión posterior a `a275086f` supera **109 pruebas**. Incluye el cupo compartido de 30 capitanes, retirada de bots con sus escoltas, entradas simultáneas que abren tres mapas, reutilización de vacantes y reconexión conservando plaza. Se mantiene el objetivo de 16 capitanes en salas pequeñas. Las escoltas no son capitanes; cada jugador conserva sus límites de flota.
+
+Se reprodujo una retención de claves en el decodificador de Colyseus Schema 5.0.33: a los 74 segundos había 423 proyectiles activos y 54.441 índices acumulados por cliente. El mantenimiento periódico de los mapas decodificados limita esa acumulación. Su regresión recorre 20.000 proyectiles, reutiliza claves y compara cada estado recibido con el original.
+
+La carga posterior de **90 clientes completos durante 600 segundos**, en tres salas de 30, terminó sin desconexiones ni avisos de decodificación. Todas las salas alcanzaron 30 barcos avanzados y 120 escoltas. Los índices retenidos se mantuvieron entre 545 y 4.491 en las muestras posteriores al arranque; el heap de cada proceso de 30 clientes osciló entre 77 y 228 MiB. Las pausas máximas registradas fueron de 702–794 ms. Informe: [carga de salas de 30](qa/load-capacity-30.json).
+
+El equipo ejecutó también parte de la suite y revisiones visuales durante esa carga. Los clientes recibieron unas **10,4 actualizaciones/s** y RTT p95 de 200–245 ms. El resultado aprueba la estabilidad local bajo esa competencia por recursos; no acredita todavía 90 jugadores a 20 Hz en el alojamiento. La capacidad del servidor debe medirse con generadores en otro equipo.
+
+Una segunda prueba mantuvo 90 conexiones durante 120 segundos, recibiendo los mismos mensajes pero con un único decodificador por sala. Sin ejecutar la suite a la vez, obtuvo unas 16,2 actualizaciones/s, RTT p95 de 25,9–31,2 ms y cero desconexiones; las pausas máximas de los clientes fueron 45,7–50,4 ms. Esto confirma que los generadores completos aportaban una parte relevante del coste local, aunque todavía no certifica 20 Hz sostenidos. [Diagnóstico de transporte](qa/load-transport-30.json).
+
+La prueba del proxy TCP volvió a pasar: corte breve recuperado en 2,566 segundos con la misma sesión; corte largo finalizado en 18,016 segundos. [Medidas de red](qa/network-resilience.json).
+
+### Comparación gráfica controlada
+
+Una escena fija de 30 capitanes avanzados y 120 escoltas, tras 180 fotogramas de calentamiento y con 1.200 muestras, produjo estos resultados. La carga de red estaba detenida durante estas mediciones.
+
+| Medida                                                       |     Antes |   Después |
+| ------------------------------------------------------------ | --------: | --------: |
+| Actualización de la vista, 1080p                             |  6,674 ms |  3,985 ms |
+| Envío al renderizador, 1080p                                 | 10,601 ms |  9,370 ms |
+| Intervalo medio de fotograma, 1080p                          | 18,792 ms | 18,403 ms |
+| Actualización de la vista, 390 × 844, DPR 2                  |  2,450 ms |  1,443 ms |
+| Envío al renderizador, 390 × 844, DPR 2                      |  3,410 ms |  2,587 ms |
+| Intervalo medio de fotograma, 390 × 844, DPR 2               | 16,667 ms | 16,667 ms |
+| Reconstrucciones de geometría por fotograma con vida estable |       170 |         0 |
+
+El trabajo de actualización de la vista bajó aproximadamente un 40 % en ambas muestras. El escenario de escritorio sigue cerca de 54 FPS de media, con p95 de 33,3 ms; no se presenta como 60 FPS sostenidos. La emulación móvil alcanzó aproximadamente 60 FPS, pero utiliza la GPU del PC. El benchmark excluye HUD, red y simulación. Datos y alcance: [comparación gráfica](qa/graphics-comparison.json).
+
+Los atlas conservan la resolución de los sprites. Nueve comparaciones en GPU de imágenes independientes y agrupadas, con transparencia, rotación y distintas escalas, dieron una diferencia máxima de cero por canal. Barras, auras y escudos conservan su forma y animan transformaciones o transparencia. Las islas y palmeras mantienen su arte y su resolución.
+
+Las mediciones históricas de los apartados siguientes se conservan para documentar los problemas anteriores. La muestra de 20,83 FPS no era una comparación controlada: antes de estos cambios, sin carga simultánea, otra muestra del juego a 1080p dio 58,13 FPS. No se atribuye ese salto a esta optimización.
+
+## Comprobaciones de la revisión anterior
 
 La [primera ejecución de CI](https://github.com/Choco-Studio/doblonia/actions/runs/35448441115), sobre `b05ff540`, terminó correctamente: verificación en Windows y Linux, y construcción y prueba del contenedor Docker. Incluyó las 104 pruebas, latencia y cortes de conexión, formato, tipos, lint, compilación y auditoría de dependencias de producción.
 
@@ -65,7 +99,7 @@ Durante 15 minutos simulados se repusieron las flotas cada segundo y se devolvi�
 
 La simulación cumple los objetivos de tiempo de paso propuestos para una sala en este equipo. Aún hay que medir el coste completo del servidor, con red y serialización, en el alojamiento elegido.
 
-## Carga de red local
+## Carga de red local anterior
 
 Con un servidor de producción propio en el puerto 2569:
 
@@ -91,7 +125,7 @@ En el último intento, dos salas mantuvieron sus 24 clientes; la tercera perdió
 
 Se probaron sockets y SDK reales. No es una simulación de pérdida de paquetes ni una prueba de cambio entre Wi-Fi y datos móviles. Medidas en [network-resilience.json](qa/network-resilience.json).
 
-## Renderizado medido
+## Renderizado medido antes de esta optimización
 
 Se separaron los estilos de texto de cada nombre y cifra de daño, evitando que cambiar uno invalidase los demás. El anillo de peligro reutiliza su geometría y los objetos alejados de la cámara dejan de enviarse al renderizador, conservando sus animaciones y el dibujo de los elementos visibles.
 
@@ -112,7 +146,7 @@ npm run ai:report -- 300 20260919
 - Probar en Android y en Safari de iPhone: dos mandos simultáneos, giro de pantalla, áreas seguras, teclado, audio, reanudación y memoria después de varias partidas.
 - Resolver el rendimiento observado y medir directamente renderizado y entradas en un PC integrado y un teléfono de gama media.
 - Jugar con personas para revisar primeras partidas, lectura del combate, cada rama de armas, flotas, jefes y balance de equipos.
-- Investigar los cierres de la carga de 72 clientes y repetirla con generadores separados del servidor. Probar pérdida de red y cambio de conexión real.
+- Repetir la carga con generadores separados del servidor y verificar la cadencia de 20 Hz en el alojamiento. La repetición local con 90 clientes ya terminó sin cierres. Probar pérdida de red y cambio de conexión real.
 - Validar Compose y systemd en el alojamiento. El contenedor Docker ya se construyó y superó la prueba de humo en CI.
 - Configurar alojamiento, HTTPS, límites del proxy y reversión; verificar una partida desde la URL pública.
 - Confirmar la titularidad del material original y ampliar el equipo de revisión cuando corresponda. La rama principal está protegida y el canal privado de seguridad está activado; [REPOSITORIO.md](REPOSITORIO.md) describe las reglas y la excepción administradora.

@@ -15,7 +15,7 @@ npm ci
 npm run dev
 ```
 
-Abre <http://localhost:5173>. El servidor utiliza el puerto 2567. Los dos modos se rellenan con bots hasta 16 barcos principales y admiten hasta 24 jugadores humanos por sala.
+Abre <http://localhost:5173>. El servidor utiliza el puerto 2567. Cada mapa admite **30 capitanes en total, incluidos los bots**. Las salas pequeñas se rellenan hasta 16 y los bots ceden espacio a los jugadores. Cuando no queda plaza, se abre otra sala automáticamente; cada capitán conserva sus propias escoltas.
 
 | PC                     | Acción                                      |
 | ---------------------- | ------------------------------------------- |

@@ -68,6 +68,7 @@ export class ShipSprite {
   private hull: Sprite
   private flash: Sprite
   private shield = new Graphics()
+  private shieldRim = new Graphics()
   private chains = new Graphics()
   private slowed = false
   private sails: Sprite[] = []
@@ -79,6 +80,7 @@ export class ShipSprite {
   private rudder: Sprite | null = null
   private equipKey = ''
   private recoilT = 0
+  private recoilDirty = false
   private flashT = 0
   private time = Math.random() * 10
   private hullScale = 1
@@ -104,7 +106,11 @@ export class ShipSprite {
     this.root.addChild(this.sailLayer)
     this.root.addChild(this.turretLayer)
     this.root.addChild(this.shield)
+    this.root.addChild(this.shieldRim)
     this.root.addChild(this.chains)
+    this.shield.circle(0, 0, r * 1.75).fill(0x6cf0ff)
+    this.shieldRim.circle(0, 0, r * 1.75).stroke({ width: 2, color: 0x9ff6ff })
+    this.shield.visible = this.shieldRim.visible = false
 
     const L = r * HULL_LENGTH
     const W = r * HULL_BEAM
@@ -285,6 +291,7 @@ export class ShipSprite {
 
   recoil(): void {
     this.recoilT = 1
+    this.recoilDirty = true
   }
 
   /** Aparejo roto por palanqueta: anillo de cadena alrededor del casco. */
@@ -338,8 +345,14 @@ export class ShipSprite {
       turnRate: number
       protectedFor: number
     },
+    visible = true,
   ): void {
     this.time += dt
+    this.recoilT = Math.max(0, this.recoilT - dt * 6)
+    this.flashT = Math.max(0, this.flashT - dt * 7)
+    if (this.sinkT >= 0) this.sinkT = Math.min(1, this.sinkT + dt / 1.6)
+    // Los temporizadores avanzan fuera de cámara; las piezas se colocan al volver a entrar.
+    if (!visible) return
     const shadowOff = 7 * this.hullScale
     this.root.position.set(s.x, s.y)
     this.shadow.position.set(s.x + shadowOff, s.y + shadowOff * 1.3)
@@ -369,29 +382,24 @@ export class ShipSprite {
 
     if (this.rudder) this.rudder.rotation = Math.PI - Math.max(-0.6, Math.min(0.6, s.turnRate * 0.35))
 
-    if (this.recoilT > 0) {
-      this.recoilT = Math.max(0, this.recoilT - dt * 6)
+    if (this.recoilDirty) {
       const k = this.recoilT * 3
       for (const m of this.mounts) m.sprite.position.set(m.baseX - m.dirX * k, m.baseY - m.dirY * k)
+      this.recoilDirty = this.recoilT > 0
     }
 
-    if (this.flashT > 0) {
-      this.flashT = Math.max(0, this.flashT - dt * 7)
-      this.flash.alpha = this.flashT * 0.55
-    }
+    this.flash.alpha = this.flashT * 0.55
 
-    if (this.slowed) this.chains.rotation += dt * 0.8
-    this.shield.clear()
+    if (this.slowed) this.chains.rotation = this.time * 0.8
+    this.shield.visible = this.shieldRim.visible = s.protectedFor > 0
     if (s.protectedFor > 0) {
-      const R = this.look.radius * 1.75
       const pulse = 0.5 + Math.sin(this.time * 6) * 0.15
       const fade = Math.min(1, s.protectedFor / 800)
-      this.shield.circle(0, 0, R).fill({ color: 0x6cf0ff, alpha: 0.07 * fade })
-      this.shield.circle(0, 0, R).stroke({ width: 2, color: 0x9ff6ff, alpha: pulse * fade })
+      this.shield.alpha = 0.07 * fade
+      this.shieldRim.alpha = pulse * fade
     }
 
     if (this.sinkT >= 0) {
-      this.sinkT = Math.min(1, this.sinkT + dt / 1.6)
       const t = this.sinkT
       this.root.alpha = 1 - t
       this.shadow.alpha = 0.32 * (1 - t)

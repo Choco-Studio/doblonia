@@ -4,13 +4,16 @@ import { setTimeout as delay } from 'node:timers/promises'
 import { monitorEventLoopDelay } from 'node:perf_hooks'
 import { Client, type Room } from '@colyseus/sdk'
 import { RoomStateSchema } from '@doblonia/protocol'
-import { BRANCHES_BY_SLOT, SLOT_ORDER, FLEET_SHIPS } from '@doblonia/content'
+import { BRANCHES_BY_SLOT, SLOT_ORDER, FLEET_SHIPS, ROOM_CAPACITY } from '@doblonia/content'
+import { maintainDecodedState } from '../src/net/decodedState.js'
 
 // Usa una instancia local dedicada con DOBLONIA_DEV=1. Las recompensas son una carga sintética.
 const endpoint = process.argv[2] ?? 'http://127.0.0.1:2574'
 const seconds = Number(process.argv[3] ?? 600)
 const roomCount = Number(process.argv[4] ?? 3)
 const reportName = process.argv[5] ?? 'multi-room-load'
+const decodeMode = process.argv[6] ?? 'full'
+assert.ok(decodeMode === 'full' || decodeMode === 'transport')
 assert.match(reportName, /^[a-z0-9-]+$/)
 assert.ok(
   ['127.0.0.1', 'localhost', '[::1]'].includes(new URL(endpoint).hostname),
@@ -27,7 +30,13 @@ interface Participant {
 }
 const clients: Participant[] = []
 const rtts: number[] = []
-const memory: { seconds: number; heapMiB: number }[] = []
+const memory: {
+  seconds: number
+  heapMiB: number
+  decoderRefs: number
+  bulletIndexes: number
+  bullets: number
+}[] = []
 const eventLoop = monitorEventLoopDelay({ resolution: 20 })
 eventLoop.enable()
 let unexpectedLeaves = 0
@@ -82,7 +91,7 @@ try {
   console.warn = console.error = captureDecode
   for (let group = 0; group < roomCount; group++) {
     let roomId = ''
-    for (let i = 0; i < 24; i++) {
+    for (let i = 0; i < ROOM_CAPACITY; i++) {
       const sdk = new Client(endpoint)
       const options = { name: `Carga ${group}-${i}` }
       const room =
@@ -90,6 +99,14 @@ try {
           ? await sdk.create<RoomStateSchema>('doblonia_ffa', options, RoomStateSchema)
           : await sdk.joinById<RoomStateSchema>(roomId, options, RoomStateSchema)
       roomId = room.roomId
+      if (decodeMode === 'transport' && i > 0) {
+        // Diagnóstico de servidor: todos reciben los bytes, pero un observador por
+        // sala decodifica el mundo compartido. No representa el trabajo del navegador.
+        const observer = clients[group * ROOM_CAPACITY].room
+        room.serializer.setState = () => {}
+        room.serializer.patch = () => []
+        room.serializer.getState = () => observer.state
+      } else maintainDecodedState(room)
       room.reconnection.enabled = false
       const client: Participant = { room, commands: [], prepared: false, patches: 0 }
       room.onMessage('events', () => {})
@@ -152,7 +169,7 @@ try {
       }
     }
     if (tick % 20 === 0) {
-      const representatives = clients.filter((_, index) => index % 24 === 0)
+      const representatives = clients.filter((_, index) => index % ROOM_CAPACITY === 0)
       peakFleet = Math.max(
         peakFleet,
         representatives.reduce((sum, { room }) => sum + room.state.fleet.size, 0),
@@ -168,7 +185,14 @@ try {
     }
     if (tick % 1200 === 0) {
       const elapsed = Math.round((performance.now() - started) / 1000)
-      memory.push({ seconds: elapsed, heapMiB: Math.round(process.memoryUsage().heapUsed / 1048576) })
+      const observer = clients[0].room
+      memory.push({
+        seconds: elapsed,
+        heapMiB: Math.round(process.memoryUsage().heapUsed / 1048576),
+        decoderRefs: observer.serializer.decoder.root.refs.size,
+        bulletIndexes: Object.keys(observer.state.bullets._collectionIndexes).length,
+        bullets: observer.state.bullets.size,
+      })
       console.log(
         `Carga: ${elapsed}/${seconds} s, ${clients.length} clientes, ${unexpectedLeaves} desconexiones`,
       )
@@ -193,6 +217,7 @@ try {
     seconds,
     rooms: roomCount,
     clients: clients.length,
+    decodeMode,
     webSocketImplementation: typeof globalThis.WebSocket === 'undefined' ? 'ws' : 'native',
     unexpectedLeaves,
     leaves,
@@ -209,8 +234,7 @@ try {
     },
     rttMs: { p50: at(0.5), p95: at(0.95), p99: at(0.99), samples: rtts.length },
     clientHeapSamples: memory,
-    scope:
-      'Local SDK clients; synthetic rewards and replenished fleets. Excludes Internet latency and browser rendering.',
+    scope: `Local SDK clients; ${decodeMode === 'full' ? 'every connection decodes state' : 'one state decoder per room, other clients receive without decoding'}; synthetic rewards and replenished fleets. Excludes Internet latency and browser rendering.`,
   }
   mkdirSync('build/qa', { recursive: true })
   writeFileSync(`build/qa/${reportName}.json`, JSON.stringify(report, null, 2) + '\n')

@@ -1,0 +1,144 @@
+{
+  "measuredAt": "2026-09-19T15:16:29.980Z",
+  "passed": true,
+  "errors": [],
+  "seconds": 120,
+  "decodeMode": "transport",
+  "clients": 90,
+  "unexpectedLeaves": 0,
+  "rooms": [
+    {
+      "measuredAt": "2026-09-19T15:16:28.863Z",
+      "seconds": 120,
+      "rooms": 1,
+      "clients": 30,
+      "decodeMode": "transport",
+      "webSocketImplementation": "native",
+      "unexpectedLeaves": 0,
+      "leaves": [],
+      "eventLoopMs": {
+        "p99": 35.45,
+        "max": 45.71
+      },
+      "advancedShips": 30,
+      "peakFleet": 120,
+      "peakBullets": 500,
+      "snapshots": {
+        "min": 1943,
+        "max": 1950
+      },
+      "rttMs": {
+        "p50": 14.28,
+        "p95": 31.19,
+        "p99": 34.15,
+        "samples": 590
+      },
+      "clientHeapSamples": [
+        {
+          "seconds": 0,
+          "heapMiB": 24,
+          "decoderRefs": 428,
+          "bulletIndexes": 0,
+          "bullets": 0
+        },
+        {
+          "seconds": 74,
+          "heapMiB": 26,
+          "decoderRefs": 1218,
+          "bulletIndexes": 677,
+          "bullets": 432
+        }
+      ],
+      "scope": "Local SDK clients; one state decoder per room, other clients receive without decoding; synthetic rewards and replenished fleets. Excludes Internet latency and browser rendering."
+    },
+    {
+      "measuredAt": "2026-09-19T15:16:28.925Z",
+      "seconds": 120,
+      "rooms": 1,
+      "clients": 30,
+      "decodeMode": "transport",
+      "webSocketImplementation": "native",
+      "unexpectedLeaves": 0,
+      "leaves": [],
+      "eventLoopMs": {
+        "p99": 35.62,
+        "max": 47.45
+      },
+      "advancedShips": 30,
+      "peakFleet": 120,
+      "peakBullets": 511,
+      "snapshots": {
+        "min": 1942,
+        "max": 1949
+      },
+      "rttMs": {
+        "p50": 14.85,
+        "p95": 25.9,
+        "p99": 26.8,
+        "samples": 590
+      },
+      "clientHeapSamples": [
+        {
+          "seconds": 0,
+          "heapMiB": 24,
+          "decoderRefs": 429,
+          "bulletIndexes": 0,
+          "bullets": 0
+        },
+        {
+          "seconds": 74,
+          "heapMiB": 24,
+          "decoderRefs": 1185,
+          "bulletIndexes": 581,
+          "bullets": 412
+        }
+      ],
+      "scope": "Local SDK clients; one state decoder per room, other clients receive without decoding; synthetic rewards and replenished fleets. Excludes Internet latency and browser rendering."
+    },
+    {
+      "measuredAt": "2026-09-19T15:16:28.927Z",
+      "seconds": 120,
+      "rooms": 1,
+      "clients": 30,
+      "decodeMode": "transport",
+      "webSocketImplementation": "native",
+      "unexpectedLeaves": 0,
+      "leaves": [],
+      "eventLoopMs": {
+        "p99": 35.65,
+        "max": 50.4
+      },
+      "advancedShips": 30,
+      "peakFleet": 120,
+      "peakBullets": 476,
+      "snapshots": {
+        "min": 1942,
+        "max": 1950
+      },
+      "rttMs": {
+        "p50": 13.28,
+        "p95": 26.77,
+        "p99": 30.38,
+        "samples": 585
+      },
+      "clientHeapSamples": [
+        {
+          "seconds": 0,
+          "heapMiB": 24,
+          "decoderRefs": 426,
+          "bulletIndexes": 0,
+          "bullets": 0
+        },
+        {
+          "seconds": 74,
+          "heapMiB": 25,
+          "decoderRefs": 1164,
+          "bulletIndexes": 749,
+          "bullets": 398
+        }
+      ],
+      "scope": "Local SDK clients; one state decoder per room, other clients receive without decoding; synthetic rewards and replenished fleets. Excludes Internet latency and browser rendering."
+    }
+  ],
+  "scope": "One SDK load process per room, all on the same local machine. Not a hosting capacity estimate."
+}

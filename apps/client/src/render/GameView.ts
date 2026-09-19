@@ -35,6 +35,8 @@ import { Ocean, MapDecor, ScreenOverlay } from './Ocean.js'
 import { Effects } from './Effects.js'
 import { ShipSprite, makeSprite, type EquipMap, type ShipLook } from './ShipSprite.js'
 import { FortSprite } from './FortSprite.js'
+import { HealthBar } from './HealthBar.js'
+import { BossAura } from './BossAura.js'
 import {
   cannonballTex,
   coinTex,
@@ -114,7 +116,7 @@ interface ShipEntity {
   label: Container
   nameText: Text
   tagText: Text
-  bar: Graphics
+  bar: HealthBar
   teamRing: Graphics | null
   rx: number
   ry: number
@@ -136,8 +138,8 @@ interface BossEntity {
   fort: boolean
   fireAcc: number
   label: Text
-  bar: Graphics
-  aura: Graphics
+  bar: HealthBar
+  aura: BossAura
   rx: number
   ry: number
   rangle: number
@@ -149,7 +151,7 @@ interface BossEntity {
 
 interface FleetEntity {
   sprite: ShipSprite
-  bar: Graphics
+  bar: HealthBar
   rx: number
   ry: number
   rangle: number
@@ -392,7 +394,7 @@ export class GameView {
 
   constructor(
     private app: Application,
-    private room: Room<RoomStateSchema>,
+    private room: Pick<Room<RoomStateSchema>, 'state'>,
     readonly myId: string,
   ) {
     this.decor = new MapDecor(this.mapSize, CENTER_RADIUS, true)
@@ -1093,16 +1095,20 @@ export class GameView {
       const speed = Math.hypot(s.vx, s.vy)
       const maxSpeed = SHIP_BASE.moveSpeed + 60
 
-      e.sprite.update(dt, {
-        x,
-        y,
-        angle,
-        aim: e.raim,
-        speed,
-        maxSpeed,
-        turnRate: e.turnRate,
-        protectedFor: s.alive ? Math.max(0, s.spawnProtectedUntil - this.renderT) : 0,
-      })
+      e.sprite.update(
+        dt,
+        {
+          x,
+          y,
+          angle,
+          aim: e.raim,
+          speed,
+          maxSpeed,
+          turnRate: e.turnRate,
+          protectedFor: s.alive ? Math.max(0, s.spawnProtectedUntil - this.renderT) : 0,
+        },
+        this.nearCamera(x, y, e.sprite.radius * 4 + 180 / this.zoom),
+      )
       e.sprite.shadow.visible = e.sprite.root.visible = s.alive || !e.sprite.sinkDone
 
       if (s.alive) this.emitWake(e, x, y, angle, speed, e.sprite.radius, dt)
@@ -1116,15 +1122,7 @@ export class GameView {
       e.label.position.set(x, y - r * 1.25 - 14 * inv)
       e.label.scale.set(inv)
       e.nameText.text = s.name
-      e.nameText.style.fill = isMe
-        ? 0xffe08a
-        : s.team === 'red'
-          ? 0xffa99c
-          : s.team === 'blue'
-            ? 0x9fd4ff
-            : 0xf2f7fa
       e.tagText.text = `NV ${s.equipLevel}`
-      e.tagText.position.set(0, 2)
 
       const hpFrac = Math.max(0, Math.min(1, s.hp / Math.max(1, s.maxHp)))
       if (s.hp < e.lastHp - 0.5) e.hpVisibleUntil = this.time + 3
@@ -1132,13 +1130,7 @@ export class GameView {
       const showBar = s.alive && (isMe || hpFrac < 0.999 || this.time < e.hpVisibleUntil)
       e.bar.visible = showBar
       if (showBar) {
-        e.bar.clear()
-        const w = 56
-        const h = 6
-        e.bar.roundRect(-w / 2 - 1.5, -1.5, w + 3, h + 3, 4).fill({ color: 0x04121a, alpha: 0.75 })
-        const col = hpFrac > 0.5 ? 0x5fd98a : hpFrac > 0.25 ? 0xf0c14b : 0xff5a4d
-        e.bar.roundRect(-w / 2, 0, w * hpFrac, h, 3).fill({ color: col })
-        e.bar.roundRect(-w / 2, 0, w * hpFrac, h / 2, 2).fill({ color: 0xffffff, alpha: 0.18 })
+        e.bar.update(hpFrac)
         e.bar.position.set(x, y + r * 1.3 + 6 * inv)
         e.bar.scale.set(inv)
       }
@@ -1161,12 +1153,15 @@ export class GameView {
     const label = new Container()
     // El color depende del capitán: compartir TextStyle invalidaría todos los nombres cada fotograma.
     const nameText = new Text({ text: s.name, style: nameStyle.clone(), resolution: 2 })
+    nameText.style.fill =
+      id === this.myId ? 0xffe08a : s.team === 'red' ? 0xffa99c : s.team === 'blue' ? 0x9fd4ff : 0xf2f7fa
     nameText.anchor.set(0.5, 1)
     const tagText = new Text({ text: '', style: tagStyle, resolution: 2 })
     tagText.anchor.set(0.5, 0)
+    tagText.position.set(0, 2)
     label.addChild(nameText, tagText)
     this.labelLayer.addChild(label)
-    const bar = new Graphics()
+    const bar = new HealthBar('ship')
     this.labelLayer.addChild(bar)
     let teamRing: Graphics | null = null
     if (s.team === 'red' || s.team === 'blue') {
@@ -1242,7 +1237,7 @@ export class GameView {
     radius: number,
     dt: number,
   ): void {
-    if (speed < 12) return
+    if (speed < 12 || !this.nearCamera(x, y, radius * 4 + 100)) return
     e.wakeAcc += speed * dt * (settings.reduceEffects ? 0.05 : 0.12)
     const L = radius * HULL_LENGTH
     const W = radius * HULL_BEAM
@@ -1283,14 +1278,14 @@ export class GameView {
           ship.setLoadout(look.equip, 1)
           sprite = ship
         }
-        const aura = new Graphics()
+        const aura = new BossAura(fort, fort ? def.guardRadius : def.radius * 1.9)
         this.shadowLayer.addChild(aura)
         this.shadowLayer.addChild(sprite.shadow)
         this.bossLayer.addChild(sprite.root)
         const label = new Text({ text: def.name, style: bossNameStyle, resolution: 2 })
         label.anchor.set(0.5, 1)
         if (fort) label.style = fortNameStyle
-        const bar = new Graphics()
+        const bar = new HealthBar(fort ? 'fort' : 'boss')
         this.labelLayer.addChild(label, bar)
         e = {
           sprite,
@@ -1352,16 +1347,20 @@ export class GameView {
           this.fx.flame(e.rx + (Math.random() - 0.5) * 30, e.ry + (Math.random() - 0.5) * 30, 0.8)
         }
       } else {
-        e.sprite.update(dt, {
-          x: e.rx,
-          y: e.ry,
-          angle: e.rangle,
-          aim: e.raim,
-          speed,
-          maxSpeed: def.moveSpeed,
-          turnRate: 0,
-          protectedFor: 0,
-        })
+        e.sprite.update(
+          dt,
+          {
+            x: e.rx,
+            y: e.ry,
+            angle: e.rangle,
+            aim: e.raim,
+            speed,
+            maxSpeed: def.moveSpeed,
+            turnRate: 0,
+            protectedFor: 0,
+          },
+          this.nearCamera(e.rx, e.ry, 300),
+        )
         const visible = b.alive || !e.sprite.sinkDone
         e.sprite.root.visible = e.sprite.shadow.visible = visible
         if (b.alive) this.emitWake(e, e.rx, e.ry, e.rangle, speed, def.radius, dt)
@@ -1370,35 +1369,7 @@ export class GameView {
       if (b.alive && (b.status & 2) !== 0)
         this.emitFire(e, e.rx, e.ry, e.rangle, fort ? def.radius * 0.5 : def.radius, dt)
 
-      e.aura.clear()
-      if (b.alive) {
-        const chasing = b.state === 'chase'
-        const pulse = 0.5 + Math.sin(this.time * 4) * 0.5
-        if (fort) {
-          // Radio de tiro del fuerte: aro discontinuo tenue, rojo si está disparando
-          const r = def.guardRadius
-          const segs = 48
-          for (let i = 0; i < segs; i += 2) {
-            const a0 = (i / segs) * Math.PI * 2 + this.time * 0.05
-            e.aura.moveTo(e.rx + Math.cos(a0) * r, e.ry + Math.sin(a0) * r)
-            e.aura.arc(e.rx, e.ry, r, a0, a0 + Math.PI / segs)
-          }
-          e.aura.stroke({
-            width: 3,
-            color: chasing ? 0xff5a4d : 0xf0c14b,
-            alpha: chasing ? 0.22 + pulse * 0.18 : 0.12,
-          })
-        } else {
-          e.aura
-            .circle(e.rx, e.ry, def.radius * 1.9)
-            .fill({ color: chasing ? 0xff3b30 : 0xf0c14b, alpha: chasing ? 0.08 + pulse * 0.06 : 0.04 })
-          e.aura.circle(e.rx, e.ry, def.radius * 1.9).stroke({
-            width: 2,
-            color: chasing ? 0xff5a4d : 0xf0c14b,
-            alpha: chasing ? 0.35 + pulse * 0.3 : 0.2,
-          })
-        }
-      }
+      e.aura.update(e.rx, e.ry, this.time, b.alive, b.state === 'chase')
 
       const inv = 1 / this.zoom
       const top = fort ? def.radius * 1.35 : def.radius * 1.6
@@ -1409,12 +1380,8 @@ export class GameView {
       e.lastHp = b.hp
       e.bar.visible = b.alive
       if (b.alive) {
-        const w = fort ? 80 : 110
         const frac = Math.max(0, Math.min(1, b.hp / Math.max(1, b.maxHp)))
-        e.bar.clear()
-        e.bar.roundRect(-w / 2 - 2, -2, w + 4, 11, 5).fill({ color: 0x1a0505, alpha: 0.85 })
-        e.bar.roundRect(-w / 2, 0, w * frac, 7, 3).fill({ color: fort ? 0xd08a3a : 0xe0413a })
-        e.bar.roundRect(-w / 2, 0, w * frac, 3, 2).fill({ color: 0xffffff, alpha: 0.2 })
+        e.bar.update(frac)
         e.bar.position.set(e.rx, e.ry - top - 12 * inv)
         e.bar.scale.set(inv)
       }
@@ -1424,7 +1391,7 @@ export class GameView {
       e.sprite.destroy()
       e.label.destroy()
       e.bar.destroy()
-      e.aura.destroy()
+      e.aura.destroy({ children: true })
       this.bosses.delete(id)
     }
   }
@@ -1452,7 +1419,7 @@ export class GameView {
         sprite.setLoadout(look.equip, 1)
         this.shadowLayer.addChild(sprite.shadow)
         this.fleetLayer.addChild(sprite.root)
-        const bar = new Graphics()
+        const bar = new HealthBar('fleet')
         this.labelLayer.addChild(bar)
         e = { sprite, bar, rx: f.x, ry: f.y, rangle: f.angle, lastHp: f.hp, wakeAcc: 0 }
         this.fleet.set(id, e)
@@ -1466,25 +1433,27 @@ export class GameView {
       const owner = state.ships.get(f.ownerShipId)
       const speed = Math.hypot(f.vx, f.vy)
       const def = findFleetDef(f.defId)
-      e.sprite.update(dt, {
-        x: e.rx,
-        y: e.ry,
-        angle: e.rangle,
-        aim: owner?.aimAngle ?? e.rangle,
-        speed,
-        maxSpeed: def?.moveSpeed ?? 150,
-        turnRate: 0,
-        protectedFor: 0,
-      })
+      e.sprite.update(
+        dt,
+        {
+          x: e.rx,
+          y: e.ry,
+          angle: e.rangle,
+          aim: owner?.aimAngle ?? e.rangle,
+          speed,
+          maxSpeed: def?.moveSpeed ?? 150,
+          turnRate: 0,
+          protectedFor: 0,
+        },
+        this.nearCamera(e.rx, e.ry, e.sprite.radius * 4 + 80),
+      )
       this.emitWake(e, e.rx, e.ry, e.rangle, speed, e.sprite.radius, dt)
       if (f.hp < e.lastHp - 0.5) e.sprite.hitFlash()
       e.lastHp = f.hp
       const frac = f.hp / Math.max(1, f.maxHp)
       e.bar.visible = frac < 0.999
       if (e.bar.visible) {
-        e.bar.clear()
-        e.bar.roundRect(-16, 0, 32, 4, 2).fill({ color: 0x04121a, alpha: 0.7 })
-        e.bar.roundRect(-16, 0, 32 * frac, 4, 2).fill({ color: 0x6cc7f0 })
+        e.bar.update(frac)
         e.bar.position.set(e.rx, e.ry + e.sprite.radius * 1.4)
         e.bar.scale.set(1 / this.zoom)
       }
@@ -1527,6 +1496,8 @@ export class GameView {
         }
         this.coins.set(id, e)
       }
+      // Al reaparecer, la fase absoluta conserva la animación sin trabajo fuera de cámara.
+      if (!this.nearCamera(e.x, e.y, 80)) return
       const age = this.time - e.born
       const pop = Math.min(1, age * 4)
       const bob = Math.sin(this.time * 2.2 + e.phase)

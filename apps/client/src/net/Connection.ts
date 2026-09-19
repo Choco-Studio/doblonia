@@ -1,6 +1,7 @@
 import { Client, Room } from '@colyseus/sdk'
 import { RoomStateSchema } from '@doblonia/protocol'
 import type { SlotId, StatId } from '@doblonia/content'
+import { maintainDecodedState } from './decodedState.js'
 
 export function serverHttpUrl(): string {
   const env = import.meta.env?.VITE_SERVER_URL
@@ -147,6 +148,7 @@ export class Connection {
   }
 
   private useRoom(room: Room<RoomStateSchema>): void {
+    maintainDecodedState(room)
     // Cada recuperación recibe un snapshot completo y reconstruye la vista de la partida.
     room.reconnection.enabled = false
     this.room = room
