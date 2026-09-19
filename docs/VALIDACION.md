@@ -4,6 +4,10 @@ Fecha: 19 de septiembre de 2026. Entorno local: Windows, Node.js 22.20.0, Intel 
 
 ## Comprobaciones realizadas
 
+La [primera ejecución de CI](https://github.com/Choco-Studio/doblonia/actions/runs/35448441115), sobre `b05ff540`, terminó correctamente: verificación en Windows y Linux, y construcción y prueba del contenedor Docker. Incluyó las 104 pruebas, latencia y cortes de conexión, formato, tipos, lint, compilación y auditoría de dependencias de producción.
+
+El paquete `runtime.tar.gz` de esa revisión se extrajo fuera del proyecto, se instaló con `npm ci --omit=dev --ignore-scripts` y arrancó mediante `npm start`. La prueba de humo aprobó HTTP, WebSocket y cinco actualizaciones de estado en cada modo. Se generaron además el ZIP de fuentes, el inventario CycloneDX y sumas SHA-256.
+
 | Comprobación                | Resultado                                                                                                                                                         |
 | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Instalación en copia limpia | `npm ci` completado con el archivo de bloqueo; `npm run check` aprobado                                                                                           |
@@ -109,7 +113,7 @@ npm run ai:report -- 300 20260919
 - Resolver el rendimiento observado y medir directamente renderizado y entradas en un PC integrado y un teléfono de gama media.
 - Jugar con personas para revisar primeras partidas, lectura del combate, cada rama de armas, flotas, jefes y balance de equipos.
 - Investigar los cierres de la carga de 72 clientes y repetirla con generadores separados del servidor. Probar pérdida de red y cambio de conexión real.
-- Ejecutar la CI remota y construir/probar el contenedor. Docker no estaba disponible en este entorno; el archivo se ha preparado, pero su ejecución no se ha certificado.
+- Validar Compose y systemd en el alojamiento. El contenedor Docker ya se construyó y superó la prueba de humo en CI.
 - Configurar alojamiento, HTTPS, límites del proxy y reversión; verificar una partida desde la URL pública.
 - Configurar la protección de la rama principal en `Choco-Studio/doblonia`. El canal privado de seguridad está activado y `CODEOWNERS` identifica al mantenedor; queda confirmar la titularidad del material original.
 

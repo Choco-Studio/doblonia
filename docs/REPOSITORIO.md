@@ -15,7 +15,7 @@ Los forks deben usar su propio remoto. No se necesitan contraseñas ni tokens de
 
 ## Revisión de contribuciones
 
-- Esperar a que la primera ejecución de **Check** termine en Windows, Linux y contenedor.
+- La primera ejecución de **Check** está aprobada en Windows, Linux y contenedor. Cada contribución debe aprobar sus propias comprobaciones.
 - Proteger la rama principal frente a borrado y force-push; exigir pull request, comprobaciones aprobadas y revisión de un mantenedor para aportaciones externas. Cuando exista un segundo mantenedor, exigir también revisión independiente para los cambios propios.
 - **Private vulnerability reporting** está activado; `SECURITY.md` enlaza al canal del repositorio.
 - Mantener los workflows de aportaciones externas sin secretos de despliegue. Aprobarlos después de revisar cambios en dependencias y CI.

@@ -65,7 +65,7 @@ docker compose ps
 docker compose logs --tail=100 game
 ```
 
-El contenedor usa un sistema de archivos de solo lectura, conserva `/tmp` en memoria y rota sus registros. El proceso Node se ejecuta sin privilegios. La CI construye la imagen y comprueba HTTP, WebSocket y ambos modos de juego; esa ejecución remota debe aprobarse antes del despliegue. Este equipo no dispone de Docker operativo, por lo que Compose y Nginx todavía requieren validación en el alojamiento.
+El contenedor usa un sistema de archivos de solo lectura, conserva `/tmp` en memoria y rota sus registros. El proceso Node se ejecuta sin privilegios. La primera ejecución de CI construyó la imagen y comprobó HTTP, WebSocket y ambos modos de juego. Compose y Nginx todavía requieren validación en el alojamiento; la prueba de CI usa directamente `docker build` y `docker run`.
 
 ### Node con systemd
 
