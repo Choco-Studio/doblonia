@@ -1,0 +1,26 @@
+{
+  "name": "@doblonia/client",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -p . --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@colyseus/sdk": "^0.18.2",
+    "@doblonia/content": "*",
+    "@doblonia/protocol": "*",
+    "@doblonia/sim": "*",
+    "@fontsource/inter": "^5.3.0",
+    "@fontsource/pirata-one": "^5.3.0",
+    "pixi.js": "^8.21.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3",
+    "vite": "^7.3.6"
+  },
+  "license": "AGPL-3.0-or-later"
+}

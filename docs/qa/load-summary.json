@@ -1,0 +1,177 @@
+{
+  "measuredAt": "2026-09-19T14:08:20Z",
+  "passed": false,
+  "seconds": 600,
+  "clients": 72,
+  "rooms": [
+    {
+      "unexpectedLeaves": 0,
+      "leaves": [],
+      "advancedShips": 24,
+      "peakFleet": 96,
+      "peakBullets": 403,
+      "minPatches": 10061
+    },
+    {
+      "unexpectedLeaves": 0,
+      "leaves": [],
+      "advancedShips": 24,
+      "peakFleet": 96,
+      "peakBullets": 408,
+      "minPatches": 10062
+    },
+    {
+      "unexpectedLeaves": 4,
+      "leaves": [
+        {
+          "code": 1006,
+          "reason": "",
+          "seconds": 545
+        },
+        {
+          "code": 1006,
+          "reason": "",
+          "seconds": 545
+        },
+        {
+          "code": 1006,
+          "reason": "",
+          "seconds": 547
+        },
+        {
+          "code": 1006,
+          "reason": "",
+          "seconds": 547
+        }
+      ],
+      "advancedShips": 24,
+      "peakFleet": 96,
+      "peakBullets": 399,
+      "minPatches": 9030
+    }
+  ],
+  "successfulWorkers": [
+    {
+      "measuredAt": "2026-09-19T14:08:20.926Z",
+      "seconds": 600,
+      "rooms": 1,
+      "clients": 24,
+      "unexpectedLeaves": 0,
+      "leaves": [],
+      "eventLoopMs": {
+        "p99": 86.05,
+        "max": 6270.48
+      },
+      "advancedShips": 24,
+      "peakFleet": 96,
+      "peakBullets": 408,
+      "snapshots": {
+        "min": 10062,
+        "max": 10072
+      },
+      "rttMs": {
+        "p50": 21.41,
+        "p95": 65.87,
+        "p99": 93.06,
+        "samples": 2284
+      },
+      "clientHeapSamples": [
+        {
+          "seconds": 0,
+          "heapMiB": 32
+        },
+        {
+          "seconds": 72,
+          "heapMiB": 252
+        },
+        {
+          "seconds": 146,
+          "heapMiB": 404
+        },
+        {
+          "seconds": 216,
+          "heapMiB": 395
+        },
+        {
+          "seconds": 291,
+          "heapMiB": 556
+        },
+        {
+          "seconds": 366,
+          "heapMiB": 464
+        },
+        {
+          "seconds": 444,
+          "heapMiB": 360
+        },
+        {
+          "seconds": 518,
+          "heapMiB": 1265
+        }
+      ],
+      "scope": "Local SDK clients; synthetic rewards and replenished fleets. Excludes Internet latency and browser rendering."
+    },
+    {
+      "measuredAt": "2026-09-19T14:08:20.921Z",
+      "seconds": 600,
+      "rooms": 1,
+      "clients": 24,
+      "unexpectedLeaves": 0,
+      "leaves": [],
+      "eventLoopMs": {
+        "p99": 85.33,
+        "max": 7243.56
+      },
+      "advancedShips": 24,
+      "peakFleet": 96,
+      "peakBullets": 403,
+      "snapshots": {
+        "min": 10061,
+        "max": 10073
+      },
+      "rttMs": {
+        "p50": 21.07,
+        "p95": 51.9,
+        "p99": 76.42,
+        "samples": 2280
+      },
+      "clientHeapSamples": [
+        {
+          "seconds": 0,
+          "heapMiB": 31
+        },
+        {
+          "seconds": 72,
+          "heapMiB": 228
+        },
+        {
+          "seconds": 145,
+          "heapMiB": 447
+        },
+        {
+          "seconds": 216,
+          "heapMiB": 474
+        },
+        {
+          "seconds": 291,
+          "heapMiB": 642
+        },
+        {
+          "seconds": 367,
+          "heapMiB": 568
+        },
+        {
+          "seconds": 445,
+          "heapMiB": 429
+        },
+        {
+          "seconds": 519,
+          "heapMiB": 1386
+        }
+      ],
+      "scope": "Local SDK clients; synthetic rewards and replenished fleets. Excludes Internet latency and browser rendering."
+    }
+  ],
+  "webSocketImplementation": "ws",
+  "scope": "All processes ran on one Windows host. Four unexpected 1006 closes; the multi-room stability test failed. No schema decoding warnings after the queued-buffer fix."
+}

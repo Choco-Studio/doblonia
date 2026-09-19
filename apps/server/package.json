@@ -1,0 +1,28 @@
+{
+  "name": "@doblonia/server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@doblonia/content": "*",
+    "@doblonia/sim": "*",
+    "@doblonia/protocol": "*",
+    "@colyseus/schema": "^5.0.8",
+    "@colyseus/ws-transport": "^0.18.2",
+    "express": "^4.21.2",
+    "cors": "^2.8.5",
+    "@colyseus/core": "^0.18.14"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3",
+    "@types/express": "^4.17.21",
+    "@types/cors": "^2.8.17",
+    "@types/node": "^22.9.0"
+  },
+  "license": "AGPL-3.0-or-later"
+}

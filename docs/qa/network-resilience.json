@@ -1,0 +1,17 @@
+{
+  "measuredAt": "2026-09-19T13:38:55.396Z",
+  "scenario": "TCP proxy: 75 ms per direction, ±20 ms jitter, ordered bytes",
+  "rttMs": {
+    "p50": 170.11,
+    "p95": 192.7,
+    "p99": 197.95,
+    "samples": 30
+  },
+  "briefOutageMs": 1200,
+  "recoveryMs": 2606,
+  "sameSession": true,
+  "prolongedOutageMs": 25000,
+  "timeoutMs": 18003,
+  "bytesRelayed": 82285,
+  "scope": "Real local sockets and SDK. Excludes browser rendering and Internet packet loss."
+}

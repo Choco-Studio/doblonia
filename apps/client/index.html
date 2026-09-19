@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#05202e" />
+    <title>Doblonia.io</title>
+    <meta
+      name="description"
+      content="Doblonia.io — combate naval multijugador de navegador. Sucesor espiritual de código abierto, sin afiliación con el juego original."
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚓</text></svg>"
+    />
+    <style>
+      :root {
+        --ink: #eaf2f6;
+        --ink-dim: #a9c1cc;
+        --gold: #f0c14b;
+        --gold-dim: #b98f2a;
+        --sea-1: #05202e;
+        --sea-2: #0a3346;
+        --sea-3: #0e4a63;
+        --danger: #ef4b4b;
+        --good: #52c77e;
+        --panel: rgba(6, 22, 32, 0.82);
+        --panel-border: rgba(240, 193, 75, 0.28);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: radial-gradient(ellipse at 50% 30%, var(--sea-3), var(--sea-1) 75%);
+        color: var(--ink);
+        font-family: 'Inter', system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      #app {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      #app > canvas {
+        display: block;
+        width: 100% !important;
+        height: 100% !important;
+      }
+      .brand-font {
+        font-family: 'Pirata One', serif;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <noscript>Doblonia.io necesita JavaScript para cargar el mar y conectarse a una partida.</noscript>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

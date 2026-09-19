@@ -1,0 +1,24 @@
+[Unit]
+Description=Doblonia.io game server
+After=network.target
+
+[Service]
+Type=simple
+User=doblonia
+Group=doblonia
+WorkingDirectory=/srv/doblonia/current
+Environment=NODE_ENV=production HOST=127.0.0.1 PORT=2567
+ExecStart=/usr/bin/node apps/server/dist/index.js
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+UMask=0077
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

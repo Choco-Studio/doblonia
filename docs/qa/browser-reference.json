@@ -1,0 +1,74 @@
+{
+  "withoutGame": {
+    "averageFps": 52.98,
+    "elapsedSeconds": 110,
+    "errors": [],
+    "frameMs": {
+      "p50": 18,
+      "p95": 35,
+      "p99": 36.25
+    },
+    "frames": 5848,
+    "heapBytes": {
+      "current": 11741390,
+      "initial": 11578258
+    },
+    "longTasks": 0,
+    "longestTaskMs": 0,
+    "slowFrames": 293,
+    "viewport": {
+      "dpr": 1,
+      "height": 1080,
+      "width": 1920
+    },
+    "visibleFrameSeconds": 110.37
+  },
+  "underLoad": {
+    "averageFps": 46.01,
+    "elapsedSeconds": 225,
+    "errors": [],
+    "frameMs": {
+      "p50": 17.5,
+      "p95": 50,
+      "p99": 66.5
+    },
+    "frames": 10338,
+    "heapBytes": {
+      "current": 11578258,
+      "initial": 57334508
+    },
+    "longTasks": 0,
+    "longestTaskMs": 0,
+    "slowFrames": 1046,
+    "viewport": {
+      "dpr": 1,
+      "height": 1080,
+      "width": 1920
+    },
+    "visibleFrameSeconds": 224.68
+  },
+  "gameBefore": {
+    "averageFps": 18.09,
+    "elapsedSeconds": 230,
+    "errors": [],
+    "frameMs": {
+      "p50": 54,
+      "p95": 72.5,
+      "p99": 88.75
+    },
+    "frames": 4169,
+    "heapBytes": {
+      "current": 73615041,
+      "initial": 49589540
+    },
+    "longTasks": 0,
+    "longestTaskMs": 0,
+    "slowFrames": 4169,
+    "viewport": {
+      "dpr": 1,
+      "height": 1080,
+      "width": 1920
+    },
+    "visibleFrameSeconds": 230.4
+  }
+}

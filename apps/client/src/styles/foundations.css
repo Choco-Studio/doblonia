@@ -1,0 +1,94 @@
+:root {
+  --ink: #eef5f8;
+  --ink-2: #b9ccd5;
+  --ink-3: #9cb3bc;
+  --gold: #f2c24e;
+  --gold-2: #ffdf8a;
+  --gold-3: #b98a22;
+  --sea-0: #020d14;
+  --sea-1: #05202e;
+  --panel: rgba(5, 22, 31, 0.88);
+  --panel-solid: #071b26;
+  --panel-2: rgba(10, 34, 47, 0.85);
+  --line: rgba(242, 194, 78, 0.22);
+  --line-2: rgba(185, 211, 213, 0.17);
+  --good: #5fd98a;
+  --warn: #f2c24e;
+  --bad: #ff5a4d;
+  --blue: #6cc7f0;
+  --radius: 14px;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  --c-hull: #5fd98a;
+  --c-repair: #7ce0c3;
+  --c-range: #6cc7f0;
+  --c-damage: #ff6b5a;
+  --c-reload: #f2c24e;
+  --c-speed: #b58cff;
+  --c-turn: #ff9fd0;
+  --c-ram: #d9a066;
+}
+
+* {
+  box-sizing: border-box;
+}
+button {
+  font: inherit;
+  color: inherit;
+}
+kbd {
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  font-weight: 800;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-bottom-width: 2px;
+  color: var(--ink-2);
+}
+
+.ui-root {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+  font-family: 'Inter', system-ui, sans-serif;
+  color: var(--ink);
+  user-select: none;
+}
+.ui-root .interactive,
+.ui-root button,
+.ui-root input {
+  pointer-events: auto;
+}
+
+.panel {
+  background: linear-gradient(145deg, rgba(78, 124, 128, 0.12), transparent 55%), var(--panel);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius);
+  box-shadow:
+    var(--shadow),
+    inset 0 1px 0 rgba(225, 246, 234, 0.09),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(8px) saturate(1.2);
+  -webkit-backdrop-filter: blur(8px) saturate(1.2);
+}
+.panel-title {
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.panel-title b {
+  color: var(--gold);
+  letter-spacing: 0.02em;
+}

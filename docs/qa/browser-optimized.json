@@ -1,0 +1,25 @@
+{
+  "averageFps": 20.83,
+  "elapsedSeconds": 259,
+  "errors": [],
+  "frameMs": {
+    "p50": 50,
+    "p95": 66.75,
+    "p99": 83.5
+  },
+  "frames": 5391,
+  "heapBytes": {
+    "current": 45298102,
+    "initial": 32315196
+  },
+  "longTasks": 0,
+  "longestTaskMs": 0,
+  "slowFrames": 4155,
+  "viewport": {
+    "dpr": 1,
+    "height": 1080,
+    "width": 1920
+  },
+  "viewportChanged": false,
+  "visibleFrameSeconds": 258.85
+}

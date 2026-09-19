@@ -1,0 +1,28 @@
+services:
+  game:
+    image: doblonia:${DOBLONIA_RELEASE:-local}
+    build:
+      context: .
+      args:
+        VITE_SOURCE_URL: ${VITE_SOURCE_URL:?Set the public source repository URL}
+    ports:
+      - '127.0.0.1:2567:2567'
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 2567
+    init: true
+    restart: unless-stopped
+    stop_grace_period: 30s
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,noexec,nosuid
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'

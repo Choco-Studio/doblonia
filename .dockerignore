@@ -1,0 +1,10 @@
+**/node_modules
+**/dist
+.git
+.claude
+build
+.env
+.env.*
+!.env.example
+*.log
+docs/qa
