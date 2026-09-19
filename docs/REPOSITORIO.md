@@ -16,10 +16,13 @@ Los forks deben usar su propio remoto. No se necesitan contraseñas ni tokens de
 ## Revisión de contribuciones
 
 - La primera ejecución de **Check** está aprobada en Windows, Linux y contenedor. Cada contribución debe aprobar sus propias comprobaciones.
-- Proteger la rama principal frente a borrado y force-push; exigir pull request, comprobaciones aprobadas y revisión de un mantenedor para aportaciones externas. Cuando exista un segundo mantenedor, exigir también revisión independiente para los cambios propios.
+- `master` exige pull request, una aprobación de `CODEOWNERS`, resolución de conversaciones, rama actualizada y comprobaciones de Windows, Linux y contenedor. Las nuevas aportaciones invalidan las aprobaciones anteriores. El borrado y force-push están deshabilitados.
+- La cuenta administradora conserva la excepción de mantenimiento de GitHub. Cuando exista un segundo mantenedor, exigir también revisión independiente para los cambios propios antes de deshabilitar esa excepción.
 - **Private vulnerability reporting** está activado; `SECURITY.md` enlaza al canal del repositorio.
 - Mantener los workflows de aportaciones externas sin secretos de despliegue. Aprobarlos después de revisar cambios en dependencias y CI.
 - `CODEOWNERS` asigna la revisión a **Choco-Studio**. Añadir otros mantenedores cuando sus cuentas estén confirmadas.
+
+Las alertas de Dependabot y la protección frente a secretos están activadas. CodeQL está solicitado mediante la configuración estándar de GitHub; su primer análisis debe terminar antes de considerar comprobado ese control. Las actualizaciones automáticas abren propuestas que requieren revisión; no se integran solas.
 
 GitHub documenta la [protección de ramas](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches) y la [recepción privada de vulnerabilidades](https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/configure-vulnerability-reporting/configure-for-a-repository).
 

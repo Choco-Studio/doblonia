@@ -115,7 +115,7 @@ npm run ai:report -- 300 20260919
 - Investigar los cierres de la carga de 72 clientes y repetirla con generadores separados del servidor. Probar pérdida de red y cambio de conexión real.
 - Validar Compose y systemd en el alojamiento. El contenedor Docker ya se construyó y superó la prueba de humo en CI.
 - Configurar alojamiento, HTTPS, límites del proxy y reversión; verificar una partida desde la URL pública.
-- Configurar la protección de la rama principal en `Choco-Studio/doblonia`. El canal privado de seguridad está activado y `CODEOWNERS` identifica al mantenedor; queda confirmar la titularidad del material original.
+- Confirmar la titularidad del material original y ampliar el equipo de revisión cuando corresponda. La rama principal está protegida y el canal privado de seguridad está activado; [REPOSITORIO.md](REPOSITORIO.md) describe las reglas y la excepción administradora.
 
 La configuración de Nginx está preparada, pero no ejecutada: la revisión automática de permisos bloqueó el intento local sin indicar una razón más concreta. Su sintaxis, TLS y encaminamiento WebSocket deben comprobarse en el alojamiento.
 
